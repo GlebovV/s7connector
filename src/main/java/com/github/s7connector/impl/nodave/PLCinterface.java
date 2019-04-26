@@ -46,7 +46,7 @@ public final class PLCinterface {
 		this.protocol = protocol;
 	}
 
-	public int read(final byte[] b, int start, int len) {
+	public int read(final byte[] b, int start, int len) throws IOException  {
 		int res;
 		try {
 			int retry = 0;
@@ -68,16 +68,15 @@ public final class PLCinterface {
 			}
 			return res;
 		} catch (final IOException e) {
-			e.printStackTrace();
-			return 0;
+            throw new IOException("Error while reading from PLCInterface", e);
 		}
 	}
 
-	public void write(final byte[] b, final int start, final int len) {
+	public void write(final byte[] b, final int start, final int len) throws IOException {
 		try {
 			this.out.write(b, start, len);
 		} catch (final IOException e) {
-			System.err.println("Interface.write: " + e);
+			throw new IOException("Error while writing on PLCInterface", e);
 		}
 	}
 

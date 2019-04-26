@@ -19,6 +19,7 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.Random;
 
+import com.github.s7connector.exception.S7Exception;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -35,7 +36,7 @@ public class SerializerTest {
 
 	
 	@Test
-	public void test() {
+	public void test() throws S7Exception {
 		EchoConnector c = new EchoConnector();
 		
 		S7Serializer p = S7SerializerFactory.buildSerializer(c);

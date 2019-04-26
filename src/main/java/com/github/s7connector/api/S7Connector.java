@@ -16,6 +16,7 @@ limitations under the License.
 package com.github.s7connector.api;
 
 import java.io.Closeable;
+import java.io.IOException;
 
 public interface S7Connector extends Closeable {
 	/**
@@ -27,7 +28,7 @@ public interface S7Connector extends Closeable {
 	 * @param offset
 	 * @return
 	 */
-	public byte[] read(DaveArea area, int areaNumber, int bytes, int offset);
+	public byte[] read(DaveArea area, int areaNumber, int bytes, int offset) throws IOException;
 
 	/**
 	 * Writes an area
@@ -37,6 +38,6 @@ public interface S7Connector extends Closeable {
 	 * @param offset
 	 * @param buffer
 	 */
-	public void write(DaveArea area, int areaNumber, int offset, byte[] buffer);
+	public void write(DaveArea area, int areaNumber, int offset, byte[] buffer) throws IOException;
 
 }

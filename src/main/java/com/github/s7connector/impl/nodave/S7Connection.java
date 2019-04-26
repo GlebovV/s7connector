@@ -19,6 +19,7 @@
 */
 package com.github.s7connector.impl.nodave;
 
+import java.io.IOException;
 import java.util.concurrent.Semaphore;
 
 import com.github.s7connector.api.DaveArea;
@@ -63,7 +64,7 @@ public abstract class S7Connection {
 		this.semaphore = new Semaphore(1);
 	}
 
-	abstract public int exchange(PDU p1);
+	abstract public int exchange(PDU p1) throws IOException;
 
 	// int numResults;
 	/*
@@ -75,7 +76,7 @@ public abstract class S7Connection {
 	 * it's NULL you can get your data from the resultPointer in daveConnection
 	 * long as you do not send further requests.
 	 */
-	public ResultSet execReadRequest(final PDU p) {
+	public ResultSet execReadRequest(final PDU p) throws IOException {
 		PDU p2;
 		int errorState;
 		errorState = this.exchange(p);
@@ -267,7 +268,7 @@ public abstract class S7Connection {
 	/*
 	 * build the PDU for a PDU length negotiation
 	 */
-	public int negPDUlengthRequest() {
+	public int negPDUlengthRequest() throws IOException {
 		int res;
 		final PDU p = new PDU(this.msgOut, this.PDUstartOut);
 		final byte pa[] = { (byte) 0xF0, 0, 0x00, 0x01, 0x00, 0x01, 0x03, (byte) 0xC0, };
@@ -286,7 +287,7 @@ public abstract class S7Connection {
 		return res;
 	}
 
-	public int readBytes(final DaveArea area, final int DBnum, final int start, final int len, final byte[] buffer) {
+	public int readBytes(final DaveArea area, final int DBnum, final int start, final int len, final byte[] buffer) throws IOException {
 		int res = 0;
 		try {
 			this.semaphore.acquire();
@@ -352,7 +353,7 @@ public abstract class S7Connection {
 	/*
 	 * Write len bytes to PLC memory area "area", data block DBnum.
 	 */
-	public int writeBytes(final DaveArea area, final int DBnum, final int start, final int len, final byte[] buffer) {
+	public int writeBytes(final DaveArea area, final int DBnum, final int start, final int len, final byte[] buffer) throws IOException {
 		int errorState = 0;
 		this.semaphore.release();
 		final PDU p1 = new PDU(this.msgOut, this.PDUstartOut);

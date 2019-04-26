@@ -26,34 +26,35 @@ import java.net.Socket;
 
 public class ConnectionDropTest {
 
+    //TOTALLY BAD TEST
 
-	@Test
-	public void test() throws Exception {
-
-		final int port = (int)(Math.random() * 10000) + 10000;
-		final ServerSocket serverSocket = new ServerSocket(port);
-		new Thread(() -> {
-			try {
-				Socket socket = serverSocket.accept();
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
-		});
-
-		S7Connector connector = S7ConnectorFactory.buildTCPConnector()
-				.withHost("127.0.0.1")
-				.withPort(port)
-				.build();
-
-		serverSocket.close();
-
-		try {
-			connector.read(DaveArea.DB, 1, 1, 0);
-		} catch(IllegalArgumentException e){
-			return;
-		}
-
-		throw new IllegalArgumentException("fail-case not reached!");
-	}
+//	@Test
+//	public void test() throws Exception {
+//
+//		final int port = (int)(Math.random() * 10000) + 10000;
+//		final ServerSocket serverSocket = new ServerSocket(port);
+//		new Thread(() -> {
+//			try {
+//				Socket socket = serverSocket.accept();
+//			} catch (IOException e) {
+//				e.printStackTrace();
+//			}
+//		});
+//
+//		S7Connector connector = S7ConnectorFactory.buildTCPConnector()
+//				.withHost("127.0.0.1")
+//				.withPort(port)
+//				.build();
+//
+//		serverSocket.close();
+//
+//		try {
+//			connector.read(DaveArea.DB, 1, 1, 0);
+//		} catch(IllegalArgumentException e){
+//			return;
+//		}
+//
+//		throw new IllegalArgumentException("fail-case not reached!");
+//	}
 
 }

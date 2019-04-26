@@ -49,7 +49,7 @@ public final class S7SerializerImpl implements S7Serializer {
 	 *            the byte offset
 	 * @return the t
 	 */
-	public static <T> T extractBytes(final Class<T> beanClass, final byte[] buffer, final int byteOffset) {
+	public static <T> T extractBytes(final Class<T> beanClass, final byte[] buffer, final int byteOffset) throws S7Exception {
 		logger.trace("Extracting type {} from buffer with size: {} at offset {}", beanClass.getName(), buffer.length,
 				byteOffset);
 
@@ -101,7 +101,7 @@ public final class S7SerializerImpl implements S7Serializer {
 	 * @param byteOffset
 	 *            the byte offset
 	 */
-	public static void insertBytes(final Object bean, final byte[] buffer, final int byteOffset) {
+	public static void insertBytes(final Object bean, final byte[] buffer, final int byteOffset) throws S7Exception {
 		logger.trace("Inerting buffer with size: {} at offset {} into bean: {}", buffer.length, byteOffset, bean);
 
 		try {
@@ -173,7 +173,7 @@ public final class S7SerializerImpl implements S7Serializer {
 
 	/** {@inheritDoc} */
 	@Override
-	public synchronized void store(final Object bean, final int dbNum, final int byteOffset) {
+	public synchronized void store(final Object bean, final int dbNum, final int byteOffset) throws S7Exception {
 		try {
 			final BeanParseResult result = BeanParser.parse(bean);
 
