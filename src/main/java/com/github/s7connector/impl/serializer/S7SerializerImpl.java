@@ -87,7 +87,7 @@ public final class S7SerializerImpl implements S7Serializer {
 
 			return obj;
 		} catch (final Exception e) {
-			throw new S7Exception("extractBytes", e);
+			throw new S7Exception("Error while extract bytes", e);
 		}
 	}
 
@@ -128,7 +128,7 @@ public final class S7SerializerImpl implements S7Serializer {
 				}
 			}
 		} catch (final Exception e) {
-			throw new S7Exception("insertBytes", e);
+			throw new S7Exception("Error while insert bytes", e);
 		}
 	}
 
@@ -154,7 +154,7 @@ public final class S7SerializerImpl implements S7Serializer {
 			final byte[] buffer = this.connector.read(DaveArea.DB, dbNum, result.blockSize, byteOffset);
 			return extractBytes(beanClass, buffer, 0);
 		} catch (final Exception e) {
-			throw new S7Exception("dispense", e);
+			throw new S7Exception("Error while dispense", e);
 		}
 	}
 
@@ -167,7 +167,7 @@ public final class S7SerializerImpl implements S7Serializer {
 			return extractBytes(beanClass, buffer, 0);
 		} catch (final Exception e) {
 			throw new S7Exception(
-					"dispense dbnum(" + dbNum + ") byteoffset(" + byteOffset + ") blocksize(" + blockSize + ")", e);
+					"Error while dispense: dbnum(" + dbNum + ") byteoffset(" + byteOffset + ") blocksize(" + blockSize + ")", e);
 		}
 	}
 
@@ -184,7 +184,7 @@ public final class S7SerializerImpl implements S7Serializer {
 
 			this.connector.write(DaveArea.DB, dbNum, byteOffset, buffer);
 		} catch (final Exception e) {
-			throw new S7Exception("store", e);
+			throw new S7Exception("Error while store", e);
 		}
 	}
 

@@ -142,7 +142,7 @@ public final class S7TCPConnection extends S7BaseConnection {
 
             super.init(this.dc);
         } catch (final Exception e) {
-            throw new S7Exception("constructor", e);
+            throw new S7Exception("Error while setup socket", e);
         }
 
     }

@@ -54,8 +54,7 @@ public abstract class S7BaseConnection implements S7Connector {
 	 */
 	public static void checkResult(final int libnodaveResult) throws S7Exception {
 		if (libnodaveResult != Nodave.RESULT_OK) {
-			final String msg = Nodave.strerror(libnodaveResult);
-			throw new S7Exception("S7Connector error: " + msg);
+			throw new S7Exception(libnodaveResult);
 		}
 	}
 
