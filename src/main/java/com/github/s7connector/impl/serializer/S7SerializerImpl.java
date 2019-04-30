@@ -49,7 +49,7 @@ public final class S7SerializerImpl implements S7Serializer {
 	 *            the byte offset
 	 * @return the t
 	 */
-	public static <T> T extractBytes(final Class<T> beanClass, final byte[] buffer, final int byteOffset) {
+	public static <T> T extractBytes(final Class<T> beanClass, final byte[] buffer, final int byteOffset) throws S7Exception {
 		logger.trace("Extracting type {} from buffer with size: {} at offset {}", beanClass.getName(), buffer.length,
 				byteOffset);
 
@@ -87,7 +87,7 @@ public final class S7SerializerImpl implements S7Serializer {
 
 			return obj;
 		} catch (final Exception e) {
-			throw new S7Exception("extractBytes", e);
+			throw new S7Exception("Error while extract bytes", e);
 		}
 	}
 
@@ -101,7 +101,7 @@ public final class S7SerializerImpl implements S7Serializer {
 	 * @param byteOffset
 	 *            the byte offset
 	 */
-	public static void insertBytes(final Object bean, final byte[] buffer, final int byteOffset) {
+	public static void insertBytes(final Object bean, final byte[] buffer, final int byteOffset) throws S7Exception {
 		logger.trace("Inerting buffer with size: {} at offset {} into bean: {}", buffer.length, byteOffset, bean);
 
 		try {
@@ -128,7 +128,7 @@ public final class S7SerializerImpl implements S7Serializer {
 				}
 			}
 		} catch (final Exception e) {
-			throw new S7Exception("insertBytes", e);
+			throw new S7Exception("Error while insert bytes", e);
 		}
 	}
 
@@ -154,7 +154,7 @@ public final class S7SerializerImpl implements S7Serializer {
 			final byte[] buffer = this.connector.read(DaveArea.DB, dbNum, result.blockSize, byteOffset);
 			return extractBytes(beanClass, buffer, 0);
 		} catch (final Exception e) {
-			throw new S7Exception("dispense", e);
+			throw new S7Exception("Error while dispense", e);
 		}
 	}
 
@@ -167,13 +167,13 @@ public final class S7SerializerImpl implements S7Serializer {
 			return extractBytes(beanClass, buffer, 0);
 		} catch (final Exception e) {
 			throw new S7Exception(
-					"dispense dbnum(" + dbNum + ") byteoffset(" + byteOffset + ") blocksize(" + blockSize + ")", e);
+					"Error while dispense: dbnum(" + dbNum + ") byteoffset(" + byteOffset + ") blocksize(" + blockSize + ")", e);
 		}
 	}
 
 	/** {@inheritDoc} */
 	@Override
-	public synchronized void store(final Object bean, final int dbNum, final int byteOffset) {
+	public synchronized void store(final Object bean, final int dbNum, final int byteOffset) throws S7Exception {
 		try {
 			final BeanParseResult result = BeanParser.parse(bean);
 
@@ -184,7 +184,7 @@ public final class S7SerializerImpl implements S7Serializer {
 
 			this.connector.write(DaveArea.DB, dbNum, byteOffset, buffer);
 		} catch (final Exception e) {
-			throw new S7Exception("store", e);
+			throw new S7Exception("Error while store", e);
 		}
 	}
 

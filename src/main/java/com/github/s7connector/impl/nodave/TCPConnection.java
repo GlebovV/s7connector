@@ -19,6 +19,10 @@
 */
 package com.github.s7connector.impl.nodave;
 
+import com.github.s7connector.exception.S7Exception;
+
+import java.io.IOException;
+
 /**
  * The Class TCPConnection.
  */
@@ -56,7 +60,7 @@ public final class TCPConnection extends S7Connection {
      *
      * @return the int
      */
-    public int connectPLC() {
+    public int connectPLC() throws IOException {
         final byte[] b4 = {
                 (byte) 0x11, (byte) 0xE0, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x01, (byte) 0x00,
                 (byte) 0xC1, (byte) 0x02, (byte) 0x01, (byte) 0x00, (byte) 0xC2, (byte) 0x02, (byte) 0x01, (byte) 0x02,
@@ -90,7 +94,7 @@ public final class TCPConnection extends S7Connection {
      * {@inheritDoc}
      */
     @Override
-    public int exchange(final PDU p1) {
+    public int exchange(final PDU p1) throws IOException {
         this.msgOut[4] = (byte) 0x02;
         this.msgOut[5] = (byte) 0xf0;
         this.msgOut[6] = (byte) 0x80;
@@ -104,7 +108,7 @@ public final class TCPConnection extends S7Connection {
      *
      * @return the int
      */
-    protected int readISOPacket() {
+    protected int readISOPacket() throws IOException {
         int res = this.iface.read(this.msgIn, 0, 4);
         if (res == 4) {
             final int len = (0x100 * this.msgIn[2]) + this.msgIn[3];
@@ -121,7 +125,7 @@ public final class TCPConnection extends S7Connection {
      * @param size the size
      * @return the int
      */
-    protected int sendISOPacket(int size) {
+    protected int sendISOPacket(int size) throws IOException {
         size += 4;
         this.msgOut[0] = (byte) 0x03;
         this.msgOut[1] = (byte) 0x0;

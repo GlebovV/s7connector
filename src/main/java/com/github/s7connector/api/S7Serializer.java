@@ -65,6 +65,6 @@ public interface S7Serializer {
 	 * @param byteOffset
 	 *            the byte offset
 	 */
-	void store(Object bean, int dbNum, int byteOffset);
+	void store(Object bean, int dbNum, int byteOffset) throws S7Exception;
 
 }

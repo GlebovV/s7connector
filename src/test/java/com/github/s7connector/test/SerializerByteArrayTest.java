@@ -17,6 +17,7 @@ package com.github.s7connector.test;
 
 import java.util.Random;
 
+import com.github.s7connector.exception.S7Exception;
 import org.junit.Assert;
 import org.junit.Ignore;
 import org.junit.Test;
@@ -35,7 +36,7 @@ public class SerializerByteArrayTest {
 	
 	@Test
 	//@Ignore //Note: Dispenser does not work currently with plain byte[], use Byte[] instead
-	public void test() {
+	public void test() throws S7Exception {
 		EchoConnector c = new EchoConnector();
 		S7Serializer p = S7SerializerFactory.buildSerializer(c);
 

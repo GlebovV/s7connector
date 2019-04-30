@@ -16,6 +16,7 @@ limitations under the License.
 package com.github.s7connector.impl.serializer.converter;
 
 import com.github.s7connector.api.S7Serializable;
+import com.github.s7connector.exception.S7Exception;
 import com.github.s7connector.impl.serializer.S7SerializerImpl;
 import com.github.s7connector.impl.utils.S7Type;
 
@@ -23,7 +24,7 @@ public final class StructConverter implements S7Serializable {
 
 	/** {@inheritDoc} */
 	@Override
-	public <T> T extract(final Class<T> targetClass, final byte[] buffer, final int byteOffset, final int bitOffset) {
+	public <T> T extract(final Class<T> targetClass, final byte[] buffer, final int byteOffset, final int bitOffset) throws S7Exception {
 		return S7SerializerImpl.extractBytes(targetClass, buffer, byteOffset);
 	}
 
@@ -48,7 +49,7 @@ public final class StructConverter implements S7Serializable {
 	/** {@inheritDoc} */
 	@Override
 	public void insert(final Object javaType, final byte[] buffer, final int byteOffset, final int bitOffset,
-			final int size) {
+			final int size) throws S7Exception {
 		S7SerializerImpl.insertBytes(javaType, buffer, byteOffset);
 	}
 

@@ -22,6 +22,7 @@ import com.github.s7connector.impl.nodave.Nodave;
 import com.github.s7connector.impl.nodave.PLCinterface;
 import com.github.s7connector.impl.nodave.TCPConnection;
 
+import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.net.Socket;
 
@@ -79,7 +80,7 @@ public final class S7TCPConnection extends S7BaseConnection {
      * @param host
      * @throws S7Exception
      */
-    public S7TCPConnection(final String host, final int rack, final int slot, final int port, final int timeout, final SiemensPLCS plcType) throws S7Exception {
+    public S7TCPConnection(final String host, final int rack, final int slot, final int port, final int timeout, final SiemensPLCS plcType) throws IOException {
         this.host = host;
         this.rack = rack;
         this.slot = slot;
@@ -109,7 +110,7 @@ public final class S7TCPConnection extends S7BaseConnection {
     /**
      * Sets up the socket
      */
-    private void setupSocket() {
+    private void setupSocket() throws IOException {
         try {
             this.socket = new Socket();
             this.socket.setSoTimeout(2000);
@@ -141,7 +142,7 @@ public final class S7TCPConnection extends S7BaseConnection {
 
             super.init(this.dc);
         } catch (final Exception e) {
-            throw new S7Exception("constructor", e);
+            throw new S7Exception("Error while setup socket", e);
         }
 
     }

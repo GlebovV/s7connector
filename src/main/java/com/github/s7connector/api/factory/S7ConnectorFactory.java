@@ -19,6 +19,8 @@ import com.github.s7connector.api.S7Connector;
 import com.github.s7connector.api.SiemensPLCS;
 import com.github.s7connector.impl.S7TCPConnection;
 
+import java.io.IOException;
+
 /**
  * S7 connector factory, currently only for TCP connections
  *
@@ -44,7 +46,7 @@ public class S7ConnectorFactory {
         /**
          * Builds a connection with given params
          */
-        public S7Connector build() {
+        public S7Connector build() throws IOException {
             return new S7TCPConnection(this.host, this.rack, this.slot, this.port, this.timeout, this.plcsType);
         }
 
