@@ -1,6 +1,7 @@
 package com.github.s7connector.api;
 
 import java.time.Duration;
+import java.util.Objects;
 
 public final class EndpointKey {
     private final String host;
@@ -50,5 +51,23 @@ public final class EndpointKey {
 
     public Duration getPeriod() {
         return period;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        EndpointKey that = (EndpointKey) o;
+        return rack == that.rack &&
+                slot == that.slot &&
+                port == that.port &&
+                host.equals(that.host) &&
+                plcType == that.plcType &&
+                period.equals(that.period);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(host, plcType, rack, slot, port, period);
     }
 }
