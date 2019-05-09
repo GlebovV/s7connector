@@ -44,4 +44,10 @@ public final class ItemKey {
     public int hashCode() {
         return Objects.hash(area, areaNumber, bytes, offset);
     }
+
+    @Override
+    public String toString() {
+        return "" + area.toString() + areaNumber + ":" + offset + "(" + bytes + "bytes)";
+
+    }
 }

@@ -8,6 +8,8 @@ import java.util.concurrent.Future;
 import java.util.function.Consumer;
 
 public interface S7Endpoint extends Closeable {
+    void start();
+
     default void addItem(DaveArea area,
                          int areaNumber,
                          int bytes,
@@ -37,9 +39,8 @@ public interface S7Endpoint extends Closeable {
 
     default Future<Void> write(DaveArea area,
                                int areaNumber,
-                               int bytes,
                                int offset,
                                byte[] value) {
-        return write(new ItemKey(area, areaNumber, bytes, offset), value);
+        return write(new ItemKey(area, areaNumber, value.length, offset), value);
     }
 }
