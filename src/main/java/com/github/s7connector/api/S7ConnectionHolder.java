@@ -7,7 +7,7 @@ import java.io.IOException;
 import java.util.concurrent.Future;
 import java.util.function.Consumer;
 
-public interface S7Endpoint extends Closeable {
+public interface S7ConnectionHolder extends Closeable {
     void start();
 
     default void addItem(DaveArea area,

@@ -11,7 +11,7 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.atomic.AtomicLong;
 
-public class S7TCPEndpoint extends S7BaseEndpoint {
+public class S7TCPConnectionHolder extends S7BaseConnectionHolder {
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
     private static final AtomicLong THREAD_COUNTER = new AtomicLong();
@@ -26,11 +26,11 @@ public class S7TCPEndpoint extends S7BaseEndpoint {
 
     private final ScheduledExecutorService executor;
 
-    public S7TCPEndpoint(String host,
-                         SiemensPLCS plcType,
-                         int rack,
-                         int slot,
-                         int port) {
+    public S7TCPConnectionHolder(String host,
+                                 SiemensPLCS plcType,
+                                 int rack,
+                                 int slot,
+                                 int port) {
         this.host = host;
         this.plcType = plcType;
         this.rack = rack;

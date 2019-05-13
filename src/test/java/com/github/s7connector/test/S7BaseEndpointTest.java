@@ -2,7 +2,7 @@ package com.github.s7connector.test;
 
 import com.github.s7connector.api.DaveArea;
 import com.github.s7connector.api.S7Connector;
-import com.github.s7connector.impl.S7BaseEndpoint;
+import com.github.s7connector.impl.S7BaseConnectionHolder;
 import org.junit.Assert;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
@@ -23,7 +23,7 @@ public class S7BaseEndpointTest {
         ScheduledExecutorService executorServiceMock = Mockito.mock(ScheduledExecutorService.class);
         ArgumentCaptor<Runnable> rCaptor = ArgumentCaptor.forClass(Runnable.class);
 
-        S7BaseEndpoint endpoint = new S7BaseEndpoint() {
+        S7BaseConnectionHolder endpoint = new S7BaseConnectionHolder() {
             @Override
             protected S7Connector doStartConnection() throws IOException {
                 return connectorMock;
@@ -57,7 +57,7 @@ public class S7BaseEndpointTest {
         S7Connector connectorMock = Mockito.mock(S7Connector.class);
         ScheduledExecutorService executorServiceMock = Mockito.mock(ScheduledExecutorService.class);
         ArgumentCaptor<Callable<Void>> rCaptor = ArgumentCaptor.forClass(Callable.class);
-        S7BaseEndpoint endpoint = new S7BaseEndpoint() {
+        S7BaseConnectionHolder endpoint = new S7BaseConnectionHolder() {
             @Override
             protected S7Connector doStartConnection() throws IOException {
                 return connectorMock;

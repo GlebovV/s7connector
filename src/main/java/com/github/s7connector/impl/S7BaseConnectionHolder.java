@@ -2,7 +2,7 @@ package com.github.s7connector.impl;
 
 import com.github.s7connector.api.ItemKey;
 import com.github.s7connector.api.S7Connector;
-import com.github.s7connector.api.S7Endpoint;
+import com.github.s7connector.api.S7ConnectionHolder;
 import com.github.s7connector.exception.S7Exception;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -15,7 +15,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Consumer;
 
-public abstract class S7BaseEndpoint implements S7Endpoint {
+public abstract class S7BaseConnectionHolder implements S7ConnectionHolder {
     private static class ItemProcessor {
         final Consumer<byte[]> consumer;
 
