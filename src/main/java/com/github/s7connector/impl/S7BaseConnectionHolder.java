@@ -92,11 +92,25 @@ public abstract class S7BaseConnectionHolder implements S7ConnectionHolder {
 
     @Override
     public synchronized CompletableFuture<Void> write(ItemKey key, byte[] value) {
-        CompletableFuture<Void> cf = new CompletableFuture<>();
+        AtomicReference<Future<Void>> fRef = new AtomicReference<>();
+        CompletableFuture<Void> cf = new CompletableFuture<Void>() {
+            @Override
+            public boolean cancel(boolean mayInterruptIfRunning) {
+                if (super.cancel(mayInterruptIfRunning)) {
+                    Future<Void> f = fRef.get();
+                    if (f != null)
+                        return f.cancel(mayInterruptIfRunning);
+                    else
+                        return false;
+                } else return false;
+            }
+
+            public ScheduledFuture<Void> sf;
+        };
         logger.debug("Write {} -> {}", key, value);
         if (job == null)
             throw new IllegalStateException("Endpoint not started");
-        getExecutor().schedule(() -> {
+        fRef.set(getExecutor().schedule(() -> {
             try {
                 doWrite(key, value);
                 cf.complete(null);
@@ -104,7 +118,7 @@ public abstract class S7BaseConnectionHolder implements S7ConnectionHolder {
                 cf.completeExceptionally(e);
             }
             return null;
-        }, 0, TimeUnit.MILLISECONDS);
+        }, 0, TimeUnit.MILLISECONDS));
         return cf;
     }
 
