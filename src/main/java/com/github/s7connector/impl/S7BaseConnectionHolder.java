@@ -162,7 +162,7 @@ public abstract class S7BaseConnectionHolder implements S7ConnectionHolder {
         }
     }
 
-    private void checkConnectionAndDo(Runnable c) {
+    private void checkConnectionAndDo(Runnable c) throws IOException {
         synchronized (connectionLock) {
             if (connection != null) {
                 c.run();
@@ -171,20 +171,32 @@ public abstract class S7BaseConnectionHolder implements S7ConnectionHolder {
                 if (connection != null)
                     c.run();
                 else
-                    throw new RuntimeException("Connection is broken");
+                    throw new IOException("Connection is broken");
             }
         }
     }
 
     private void poll() {
         logger.trace("Polling");
-        checkConnectionAndDo(() -> {
-            try {
-                doRead();
-            } catch (Exception e) {
-                logger.error("Error during read cycle", e);
+        try {
+            checkConnectionAndDo(() -> {
+                try {
+                    doRead();
+                } catch (Exception e) {
+                    logger.error("Error during read cycle", e);
+                }
+            });
+        } catch (IOException e) {
+            logger.warn("Error while polling, retry next poll", e);
+            synchronized (this) {
+                try {
+                    if (exceptionConsumer != null)
+                        exceptionConsumer.accept(e);
+                } catch (Exception ne) {
+                    logger.error("Error while call exception consumer", ne);
+                }
             }
-        });
+        }
     }
 
     private void doRead() throws IOException {
