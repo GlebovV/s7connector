@@ -4,6 +4,7 @@ import com.github.s7connector.exception.S7Exception;
 
 import java.io.Closeable;
 import java.io.IOException;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Future;
 import java.util.function.Consumer;
 
@@ -35,9 +36,9 @@ public interface S7ConnectionHolder extends Closeable {
 
     void removeExceptionConsumer();
 
-    Future<Void> write(ItemKey key, byte[] value);
+    CompletableFuture<Void> write(ItemKey key, byte[] value);
 
-    default Future<Void> write(DaveArea area,
+    default CompletableFuture<Void> write(DaveArea area,
                                int areaNumber,
                                int offset,
                                byte[] value) {

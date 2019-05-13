@@ -1,8 +1,8 @@
 package com.github.s7connector.impl;
 
 import com.github.s7connector.api.ItemKey;
-import com.github.s7connector.api.S7Connector;
 import com.github.s7connector.api.S7ConnectionHolder;
+import com.github.s7connector.api.S7Connector;
 import com.github.s7connector.exception.S7Exception;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -91,14 +91,21 @@ public abstract class S7BaseConnectionHolder implements S7ConnectionHolder {
     }
 
     @Override
-    public synchronized Future<Void> write(ItemKey key, byte[] value) {
+    public synchronized CompletableFuture<Void> write(ItemKey key, byte[] value) {
+        CompletableFuture<Void> cf = new CompletableFuture<>();
         logger.debug("Write {} -> {}", key, value);
         if (job == null)
             throw new IllegalStateException("Endpoint not started");
-        return getExecutor().schedule(() -> {
-            doWrite(key, value);
+        getExecutor().schedule(() -> {
+            try {
+                doWrite(key, value);
+                cf.complete(null);
+            } catch (Throwable e) {
+                cf.completeExceptionally(e);
+            }
             return null;
         }, 0, TimeUnit.MILLISECONDS);
+        return cf;
     }
 
     @Override
