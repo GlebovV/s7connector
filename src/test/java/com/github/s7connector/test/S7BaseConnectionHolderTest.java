@@ -15,7 +15,7 @@ import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicReference;
 
-public class S7BaseEndpointTest {
+public class S7BaseConnectionHolderTest {
 
     @Test
     public void readTest() throws IOException {

@@ -11,7 +11,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.atomic.AtomicInteger;
 
-public class S7TCPEndpointPool {
+public class S7TCPConnectionHolderPool {
     public final class Key {
         private final String host;
         private final SiemensPLCS plcType;
