@@ -57,10 +57,10 @@ public abstract class S7BaseConnectionHolder implements S7ConnectionHolder {
 
     @Override
     public synchronized void start() {
-        logger.debug("Start endpoint");
+        logger.debug("Start connection holder");
         ScheduledExecutorService executorService = getExecutor();
         if (executorService.isShutdown())
-            throw new IllegalStateException("Endpoint is closed");
+            throw new IllegalStateException("Connection holder is closed");
         if (job == null)
             job = executorService.scheduleAtFixedRate(this::poll, 0, period.toMillis(), TimeUnit.MILLISECONDS);
     }
@@ -109,7 +109,7 @@ public abstract class S7BaseConnectionHolder implements S7ConnectionHolder {
         };
         logger.debug("Write {} -> {}", key, value);
         if (job == null)
-            throw new IllegalStateException("Endpoint not started");
+            throw new IllegalStateException("Connection holder not started");
         fRef.set(getExecutor().schedule(() -> {
             try {
                 doWrite(key, value);
@@ -124,7 +124,7 @@ public abstract class S7BaseConnectionHolder implements S7ConnectionHolder {
 
     @Override
     public synchronized void close() throws IOException {
-        logger.debug("Close endpoint");
+        logger.debug("Close connection holder");
         ScheduledExecutorService scheduledExecutorService = getExecutor();
         if (!getExecutor().isShutdown()) {
             getExecutor().shutdown();

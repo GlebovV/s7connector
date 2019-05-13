@@ -36,7 +36,7 @@ public class S7TCPConnectionHolder extends S7BaseConnectionHolder {
         this.rack = rack;
         this.slot = slot;
         this.port = port;
-        this.executor = Executors.newSingleThreadScheduledExecutor(r -> new Thread("S7Exec/" + THREAD_COUNTER.getAndIncrement()));
+        this.executor = Executors.newSingleThreadScheduledExecutor();
     }
 
     public String getHost() {
