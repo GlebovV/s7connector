@@ -209,11 +209,23 @@ public abstract class S7BaseConnectionHolder implements S7ConnectionHolder {
                 }
             } catch (S7Exception e) {
                 logger.warn("Item read error", e);
-                proc.exceptionConsumer.accept(e);
+                Consumer<S7Exception> ec = proc.exceptionConsumer;
+                try {
+                    if (ec != null)
+                        proc.exceptionConsumer.accept(e);
+                } catch (Exception ne) {
+                    logger.error("Error while call exception consumer", ne);
+                }
             } catch (IOException e) {
                 logger.error("Global read error", e);
                 error.set(true);
-                exceptionConsumer.accept(e);
+                Consumer<IOException> ec = exceptionConsumer;
+                try {
+                    if (ec != null)
+                        exceptionConsumer.accept(e);
+                } catch (Exception ne) {
+                    logger.error("Error while call exception consumer", ne);
+                }
                 closeConnection();
             }
         });
