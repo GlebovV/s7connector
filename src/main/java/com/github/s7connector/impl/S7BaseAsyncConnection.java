@@ -1,7 +1,7 @@
 package com.github.s7connector.impl;
 
 import com.github.s7connector.api.ItemKey;
-import com.github.s7connector.api.S7ConnectionHolder;
+import com.github.s7connector.api.S7AsyncConnection;
 import com.github.s7connector.api.S7Connector;
 import com.github.s7connector.exception.S7Exception;
 import org.slf4j.Logger;
@@ -15,7 +15,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Consumer;
 
-public abstract class S7BaseConnectionHolder implements S7ConnectionHolder {
+public abstract class S7BaseAsyncConnection implements S7AsyncConnection {
     private static class ItemProcessor {
         final Consumer<byte[]> consumer;
 
@@ -39,7 +39,34 @@ public abstract class S7BaseConnectionHolder implements S7ConnectionHolder {
 
     private final Object connectionLock = new Object();
 
-    private volatile ScheduledFuture<?> job = null;
+    private volatile ScheduledFuture<?> pollJob = null;
+
+    private volatile ScheduledFuture<?> deactivateJob = null;
+
+    private volatile State state = State.Idle;
+
+    private volatile Consumer<State> stateConsumer = null;
+
+    private volatile Boolean closeFlag = false;
+
+    private synchronized void setState(State state) {
+        this.state = state;
+        if (stateConsumer != null)
+            stateConsumer.accept(state);
+    }
+
+    public State getState() {
+        return state;
+    }
+
+
+    public void setStateListener(Consumer<State> listener) {
+        stateConsumer = listener;
+    }
+
+    public Consumer<State> getStateListener() {
+        return stateConsumer;
+    }
 
     public Duration getPeriod() {
         return period;
@@ -48,21 +75,68 @@ public abstract class S7BaseConnectionHolder implements S7ConnectionHolder {
     public synchronized void setPeriod(Duration period) {
         if (this.period != period) {
             this.period = period;
-            if (job != null) {
-                job.cancel(false);
-                job = getExecutor().scheduleAtFixedRate(this::poll, 0, period.toMillis(), TimeUnit.MILLISECONDS);
+            if (pollJob != null) {
+                pollJob.cancel(false);
+                pollJob = getExecutor().scheduleAtFixedRate(this::poll, 0, period.toMillis(), TimeUnit.MILLISECONDS);
             }
         }
     }
 
     @Override
     public synchronized void start() {
-        logger.debug("Start connection holder");
-        ScheduledExecutorService executorService = getExecutor();
-        if (executorService.isShutdown())
-            throw new IllegalStateException("Connection holder is closed");
-        if (job == null)
-            job = executorService.scheduleAtFixedRate(this::poll, 0, period.toMillis(), TimeUnit.MILLISECONDS);
+        if (state == State.Idle) {
+            logger.debug("Start connection");
+            ScheduledExecutorService executorService = getExecutor();
+            setState(State.Active);
+            if (deactivateJob != null) {
+                deactivateJob.cancel(false);
+                deactivateJob = null;
+            }
+            if (pollJob == null)
+                pollJob = executorService.scheduleAtFixedRate(this::poll, 0, period.toMillis(), TimeUnit.MILLISECONDS);
+        }
+    }
+
+    public synchronized void stop() {
+        if (state == State.Active && deactivateJob == null) {
+            logger.debug("Stop connection");
+            ScheduledExecutorService executorService = getExecutor();
+            if (pollJob != null) {
+                pollJob.cancel(false);
+                deactivateJob = getExecutor().schedule(() -> {
+                    try {
+                        closeConnection();
+                        logger.debug("Connection successfully closed");
+                    } catch (Exception e) {
+                        logger.error("Error while closing connection", e);
+                    } finally {
+                        synchronized (this) {
+                            pollJob = null;
+                            deactivateJob = null;
+                            if (closeFlag) {
+                                getExecutor().shutdown();
+                            }
+                        }
+                    }
+                }, 0, TimeUnit.MILLISECONDS);
+            }
+            setState(State.Idle);
+        }
+    }
+
+    @Override
+    public synchronized void close() throws IOException {
+        if (state != State.Closed) {
+            logger.debug("Close connection");
+            ScheduledExecutorService scheduledExecutorService = getExecutor();
+            if (state == State.Active)
+                stop();
+            if (deactivateJob == null)
+                getExecutor().shutdown();
+            else
+                closeFlag = true;
+            setState(State.Closed);
+        }
     }
 
     @Override
@@ -108,8 +182,8 @@ public abstract class S7BaseConnectionHolder implements S7ConnectionHolder {
             public ScheduledFuture<Void> sf;
         };
         logger.debug("Write {} -> {}", key, value);
-        if (job == null)
-            throw new IllegalStateException("Connection holder not started");
+        if (state != State.Active)
+            throw new IllegalStateException("Connection not active");
         fRef.set(getExecutor().schedule(() -> {
             try {
                 doWrite(key, value);
@@ -122,23 +196,12 @@ public abstract class S7BaseConnectionHolder implements S7ConnectionHolder {
         return cf;
     }
 
-    @Override
-    public synchronized void close() throws IOException {
-        logger.debug("Close connection holder");
-        ScheduledExecutorService scheduledExecutorService = getExecutor();
-        if (!getExecutor().isShutdown()) {
-            getExecutor().shutdown();
-            job = null;
-        }
-    }
-
     protected abstract S7Connector doStartConnection() throws IOException;
 
     protected abstract ScheduledExecutorService getExecutor();
 
     private void startConnection() {
         synchronized (connectionLock) {
-            logger.debug("Starting connection");
             if (connection == null) {
                 try {
                     connection = doStartConnection();

@@ -1,6 +1,6 @@
 package com.github.s7connector.impl;
 
-import com.github.s7connector.api.S7ConnectionHolder;
+import com.github.s7connector.api.S7AsyncConnection;
 import com.github.s7connector.api.SiemensPLCS;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -11,7 +11,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.atomic.AtomicInteger;
 
-public class S7TCPConnectionHolderPool {
+public class S7TCPAsyncConnectionPool {
     public final class Key {
         private final String host;
         private final SiemensPLCS plcType;
@@ -66,17 +66,17 @@ public class S7TCPConnectionHolderPool {
     }
 
     private Logger log = LoggerFactory.getLogger(this.getClass());
-    private Map<Key, S7TCPConnectionHolder> endpoints = new HashMap<>();
+    private Map<Key, S7TCPAsyncConnection> endpoints = new HashMap<>();
     private Map<Key, AtomicInteger> acquires = new HashMap<>();
 
-    synchronized public S7ConnectionHolder acquireEndpoint(Key key) {
+    synchronized public S7AsyncConnection acquireEndpoint(Key key) {
         if (endpoints.containsKey(key)) {
-            S7TCPConnectionHolder endpoint = endpoints.get(key);
+            S7TCPAsyncConnection endpoint = endpoints.get(key);
             acquires.get(key).incrementAndGet();
             return endpoint;
 
         } else {
-            S7TCPConnectionHolder endpoint = new S7TCPConnectionHolder(key.getHost(), key.getPlcType(), key.getRack(), key.getSlot(), key.getPort());
+            S7TCPAsyncConnection endpoint = new S7TCPAsyncConnection(key.getHost(), key.getPlcType(), key.getRack(), key.getSlot(), key.getPort());
             endpoints.put(key, endpoint);
             return endpoint;
         }

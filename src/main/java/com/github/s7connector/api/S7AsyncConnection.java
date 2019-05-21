@@ -1,15 +1,28 @@
 package com.github.s7connector.api;
 
 import com.github.s7connector.exception.S7Exception;
+import com.sun.istack.internal.Nullable;
 
 import java.io.Closeable;
 import java.io.IOException;
 import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.Future;
 import java.util.function.Consumer;
 
-public interface S7ConnectionHolder extends Closeable {
+public interface S7AsyncConnection extends Closeable {
+    enum State {
+        Idle, Active, Closed
+    }
+
     void start();
+
+    void stop();
+
+    State getState();
+
+    void setStateListener(@Nullable Consumer<State> listener);
+
+    @Nullable
+    Consumer<State> getStateListener();
 
     default void addItem(DaveArea area,
                          int areaNumber,
@@ -39,9 +52,9 @@ public interface S7ConnectionHolder extends Closeable {
     CompletableFuture<Void> write(ItemKey key, byte[] value);
 
     default CompletableFuture<Void> write(DaveArea area,
-                               int areaNumber,
-                               int offset,
-                               byte[] value) {
+                                          int areaNumber,
+                                          int offset,
+                                          byte[] value) {
         return write(new ItemKey(area, areaNumber, value.length, offset), value);
     }
 }
