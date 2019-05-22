@@ -1,7 +1,6 @@
 package com.github.s7connector.api;
 
 import com.github.s7connector.exception.S7Exception;
-import com.sun.istack.internal.Nullable;
 
 import java.io.Closeable;
 import java.io.IOException;
@@ -19,9 +18,8 @@ public interface S7AsyncConnection extends Closeable {
 
     State getState();
 
-    void setStateListener(@Nullable Consumer<State> listener);
+    void setStateListener(Consumer<State> listener);
 
-    @Nullable
     Consumer<State> getStateListener();
 
     default void addItem(DaveArea area,
