@@ -16,11 +16,11 @@ public class S7TCPAsyncConnection extends S7BaseAsyncConnection {
 
     private static final AtomicLong THREAD_COUNTER = new AtomicLong();
 
-    private final String host;
+    private volatile String host;
 
-    private final SiemensPLCS plcType;
+    private volatile SiemensPLCS plcType;
 
-    private final int rack, slot, port;
+    private volatile int rack, slot, port;
 
     private volatile Duration timeout = Duration.ofSeconds(2);
 
@@ -37,6 +37,31 @@ public class S7TCPAsyncConnection extends S7BaseAsyncConnection {
         this.slot = slot;
         this.port = port;
         this.executor = Executors.newSingleThreadScheduledExecutor();
+    }
+
+    //To take effect, connection must be restarted
+    public void setHost(String host) {
+        this.host = host;
+    }
+
+    //To take effect, connection must be restarted
+    public void setPlcType(SiemensPLCS plcType) {
+        this.plcType = plcType;
+    }
+
+    //To take effect, connection must be restarted
+    public void setRack(int rack) {
+        this.rack = rack;
+    }
+
+    //To take effect, connection must be restarted
+    public void setSlot(int slot) {
+        this.slot = slot;
+    }
+
+    //To take effect, connection must be restarted
+    public void setPort(int port) {
+        this.port = port;
     }
 
     public String getHost() {
@@ -66,6 +91,7 @@ public class S7TCPAsyncConnection extends S7BaseAsyncConnection {
     public void setTimeout(Duration timeout) {
         this.timeout = timeout;
     }
+
 
     @Override
     protected S7Connector doStartConnection() throws IOException {
