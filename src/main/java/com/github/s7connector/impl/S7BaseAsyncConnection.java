@@ -116,12 +116,14 @@ public abstract class S7BaseAsyncConnection implements S7AsyncConnection {
                             }
                             if (closeFlag) {
                                 getExecutor().shutdown();
-                            }
+                                setState(State.Closed);
+                            } else
+                                setState(State.Idle);
                         }
                     }
                 }, 0, TimeUnit.MILLISECONDS);
-            }
-            setState(State.Idle);
+            } else
+                setState(State.Idle);
         }
     }
 
@@ -241,7 +243,6 @@ public abstract class S7BaseAsyncConnection implements S7AsyncConnection {
     }
 
     private void poll() {
-        logger.trace("Polling");
         try {
             checkConnectionAndDo(() -> {
                 try {
