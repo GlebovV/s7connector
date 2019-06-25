@@ -111,8 +111,10 @@ public abstract class S7BaseAsyncConnection implements S7AsyncConnection {
                         logger.error("Error while closing connection", e);
                     } finally {
                         synchronized (this) {
-                            pollJob = null;
-                            deactivateJob = null;
+                            if(deactivateJob != null) {
+                                pollJob = null;
+                                deactivateJob = null;
+                            }
                             if (closeFlag) {
                                 getExecutor().shutdown();
                             }
