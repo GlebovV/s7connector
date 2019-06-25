@@ -92,8 +92,7 @@ public abstract class S7BaseAsyncConnection implements S7AsyncConnection {
                 deactivateJob.cancel(false);
                 deactivateJob = null;
             }
-            if (pollJob == null)
-                pollJob = executorService.scheduleAtFixedRate(this::poll, 0, period.toMillis(), TimeUnit.MILLISECONDS);
+            pollJob = executorService.scheduleAtFixedRate(this::poll, 0, period.toMillis(), TimeUnit.MILLISECONDS);
         }
     }
 
@@ -111,7 +110,7 @@ public abstract class S7BaseAsyncConnection implements S7AsyncConnection {
                         logger.error("Error while closing connection", e);
                     } finally {
                         synchronized (this) {
-                            if(deactivateJob != null) {
+                            if (deactivateJob != null) {
                                 pollJob = null;
                                 deactivateJob = null;
                             }
