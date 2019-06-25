@@ -122,8 +122,7 @@ public abstract class S7BaseAsyncConnection implements S7AsyncConnection {
                         }
                     }
                 }, 0, TimeUnit.MILLISECONDS);
-            } else
-                setState(State.Idle);
+            }
         }
     }
 
